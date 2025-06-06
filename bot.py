@@ -2,11 +2,13 @@ import asyncio
 import sys
 import logging
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
+from services.nominatim import guess_name
 
 dp = Dispatcher()
 
@@ -17,6 +19,13 @@ async def start_command(message: Message):
         await message.answer("Hello, anonymous!")
     else:
         await message.answer(f"Hello, {sender.full_name}")
+
+@dp.message(F.location)
+async def guess_name_handler(message: Message):
+    assert message.location
+    async with ClientSession() as sess:
+        name = await guess_name(sess, message.location.latitude, message.location.longitude)
+    await message.answer(name)
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
