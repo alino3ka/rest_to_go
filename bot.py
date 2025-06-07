@@ -9,6 +9,7 @@ from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
 from commands import admin, start, locations, matrix
+from utils.exceptions import CatchMiddleware
 import models
 
 COMMANDS = [
@@ -23,23 +24,24 @@ COMMANDS = [
     BotCommand(command="/matrix", description="Calculate matrix distance")
 ]
 
+last_router = Router()
+
+@last_router.message()
 async def unknown_handler(message: Message):
     await message.answer("I don't know what you want")
 
+
+dp = Dispatcher()
+dp.include_routers(
+    admin.router,
+    start.router,
+    locations.router,
+    matrix.router,
+    last_router,
+)
+dp.message.middleware(CatchMiddleware())
+
 async def main():
-    last_router = Router()
-    last_router.message()(unknown_handler)
-
-    dp = Dispatcher()
-    dp.include_routers(
-        admin.router,
-        start.router,
-        locations.router,
-        matrix.router,
-        last_router,
-    )
-
-
     bot = Bot(token=BOT_TOKEN)
     await bot(SetMyCommands(commands=COMMANDS))
     headers = {
