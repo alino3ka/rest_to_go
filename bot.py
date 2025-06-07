@@ -7,7 +7,7 @@ from aiogram.types import Message
 from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
-from commands import start, sources as sources_commands
+from commands import start, locations
 import models
 
 async def unknown(message: Message):
@@ -20,7 +20,7 @@ async def main():
     dp = Dispatcher()
     dp.include_routers(
         start.router,
-        sources_commands.router,
+        locations.router,
         last_router,
     )
 
@@ -29,12 +29,14 @@ async def main():
     headers = {
         "User-Agent": "rest_to_go",
     }
-    sources = models.ListSources()
+    sources = models.SourceList()
+    destinations = models.DestinationList()
     async with ClientSession(headers=headers) as session:
         await dp.start_polling(
             bot,
             session=session,
             sources=sources,
+            destinations=destinations,
         )
 
 if __name__ == "__main__":

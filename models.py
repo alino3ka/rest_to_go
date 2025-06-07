@@ -6,7 +6,7 @@ class Location:
     lat: float
     lon: float
 
-class ListSources:
+class LocationList:
     def __init__(self):
         self.locs: list[Location] = []
 
@@ -24,3 +24,11 @@ class ListSources:
 
     def __len__(self):
         return len(self.locs)
+
+
+class SourceList(LocationList):
+    pass
+
+
+class DestinationList(LocationList):
+    pass
