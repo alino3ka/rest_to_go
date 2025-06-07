@@ -3,12 +3,24 @@ import sys
 import logging
 
 from aiogram import Bot, Dispatcher, Router
-from aiogram.types import Message
+from aiogram.methods import SetMyCommands
+from aiogram.types import BotCommand, Message
 from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
 from commands import admin, start, locations
 import models
+
+COMMANDS = [
+    BotCommand(command="/cancel", description="Cancel current operation"),
+    BotCommand(command="/stats", description="statistics of bot"),
+    BotCommand(command="/add_source", description="add a new source"),
+    BotCommand(command="/add_destination", description="add a new destination"),
+    BotCommand(command="/sources", description="List all sources"),
+    BotCommand(command="/destinations", description="List all destinations"),
+    BotCommand(command="/clear_sources", description="Clear all known sources"),
+    BotCommand(command="/clear_destinations", description="Clear all known destinations"),
+]
 
 async def unknown(message: Message):
     await message.answer("I don't know what you want")
@@ -27,6 +39,7 @@ async def main():
 
 
     bot = Bot(token=BOT_TOKEN)
+    await bot(SetMyCommands(commands=COMMANDS))
     headers = {
         "User-Agent": "rest_to_go",
     }
