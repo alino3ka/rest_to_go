@@ -23,12 +23,12 @@ COMMANDS = [
     BotCommand(command="/matrix", description="Calculate matrix distance")
 ]
 
-async def unknown(message: Message):
+async def unknown_handler(message: Message):
     await message.answer("I don't know what you want")
 
 async def main():
     last_router = Router()
-    last_router.message()(unknown)
+    last_router.message()(unknown_handler)
 
     dp = Dispatcher()
     dp.include_routers(

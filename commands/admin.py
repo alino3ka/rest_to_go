@@ -7,5 +7,5 @@ from models import DestinationList, SourceList
 router = Router()
 
 @router.message(Command("stats"))
-async def stats(message: Message, sources: SourceList, destinations: DestinationList):
+async def stats_handler(message: Message, sources: SourceList, destinations: DestinationList):
     await message.answer(f"Sources: {len(sources)}\nDestinations: {len(destinations)}")

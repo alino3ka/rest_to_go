@@ -18,7 +18,7 @@ class AddLocation(StatesGroup):
     name = State()
 
 @router.message(Command("cancel"))
-async def cancel(message: Message, state: FSMContext):
+async def cancel_handler(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
         "Operation canceled",
@@ -26,19 +26,19 @@ async def cancel(message: Message, state: FSMContext):
     )
 
 @router.message(Command("add_source"))
-async def add_source(message: Message, state: FSMContext):
+async def add_source_handler(message: Message, state: FSMContext):
     await state.update_data(is_source=True)
     await state.set_state(AddLocation.location)
     await message.answer("Send location of new source")
 
 @router.message(Command("add_destination"))
-async def add_destination(message: Message, state: FSMContext):
+async def add_destination_handler(message: Message, state: FSMContext):
     await state.update_data(is_source=False)
     await state.set_state(AddLocation.location)
     await message.answer("Send location of new destination")
 
 @router.message(AddLocation.location, F.location)
-async def add_location(message: Message, state: FSMContext, session: ClientSession):
+async def add_location_handler(message: Message, state: FSMContext, session: ClientSession):
     assert message.location
     lat = message.location.latitude
     lon = message.location.longitude
@@ -56,11 +56,11 @@ async def add_location(message: Message, state: FSMContext, session: ClientSessi
     )
 
 @router.message(AddLocation.location)
-async def need_location(message: Message):
+async def need_location_handler(message: Message):
     await message.answer("Just send location")
 
 @router.message(AddLocation.name, F.text)
-async def add_name(
+async def add_name_handler(
     message: Message,
     state: FSMContext,
     sources: SourceList,
@@ -83,28 +83,28 @@ async def add_name(
         )
 
 @router.message(AddLocation.name)
-async def need_name(message: Message):
+async def need_name_handler(message: Message):
     await message.answer("Send a name of location")
 
 @router.message(Command("clear_sources"))
-async def clear_sources(message: Message, sources: SourceList):
+async def clear_sources_handler(message: Message, sources: SourceList):
     sources.clear()
     await message.answer("Cleared all known sources")
 
 @router.message(Command("clear_destinations"))
-async def clear_destinations(message: Message, destinations: DestinationList):
+async def clear_destinations_handler(message: Message, destinations: DestinationList):
     destinations.clear()
     await message.answer("Cleared all known destinations")
 
 @router.message(Command("sources"))
-async def sources(message: Message, sources: SourceList):
+async def sources_handler(message: Message, sources: SourceList):
     if not sources:
         await message.answer("No known sources")
         return
     await message.answer(_format_locations(iter(sources)))
 
 @router.message(Command("destinations"))
-async def destinations(message: Message, destinations: DestinationList):
+async def destinations_handler(message: Message, destinations: DestinationList):
     if not destinations:
         await message.answer("No known destinations")
         return

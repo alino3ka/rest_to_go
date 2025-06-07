@@ -9,7 +9,7 @@ from services.matrix import calculate_matrix
 router = Router()
 
 @router.message(Command("matrix"))
-async def matrix(
+async def matrix_handler(
     message: Message,
     sources: SourceList,
     destinations: DestinationList,
