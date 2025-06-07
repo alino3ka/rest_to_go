@@ -21,7 +21,8 @@ COMMANDS = [
     BotCommand(command="/destinations", description="List all destinations"),
     BotCommand(command="/clear_sources", description="Clear all known sources"),
     BotCommand(command="/clear_destinations", description="Clear all known destinations"),
-    BotCommand(command="/matrix", description="Calculate matrix distance")
+    BotCommand(command="/matrix", description="Calculate matrix distance"),
+    BotCommand(command="/best", description="Find best destination from all sources")
 ]
 
 last_router = Router()

@@ -28,6 +28,9 @@ class LocationList:
     def __len__(self):
         return len(self.locs)
 
+    def __getitem__(self, i: int) -> Location:
+        return self.locs[i]
+
 
 class SourceList(LocationList):
     pass

@@ -25,3 +25,35 @@ async def matrix_handler(
         for duration, destination in zip(durations, destinations):
             lines.append(f"> {destination.pretty()}: {duration if duration is not None else "Unknown"}")
     await message.answer("\n".join(lines))
+
+
+@router.message(Command("best"))
+async def best_handler(
+    message: Message,
+    sources: SourceList,
+    destinations: DestinationList,
+    session: ClientSession,
+):
+    matrix = await calculate_matrix(session, sources, destinations)
+
+    best_i = -1
+    best_dist = float('inf')
+    for i in range(len(destinations)):
+        dist = float('-inf')
+        is_failed = False
+        for row in matrix:
+            v = row[i]
+            if v is None:
+                is_failed = True
+                break
+            dist = max(dist, v)
+        if is_failed:
+            continue
+        if dist < best_dist:
+            best_dist = dist
+            best_i = i
+
+    if best_i == -1:
+        await message.answer("Sorry, I can't find good destination")
+    else:
+        await message.answer(f"Best is {destinations[best_i].pretty()}, {best_dist}")
