@@ -7,7 +7,7 @@ from aiogram.types import Message
 from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
-from commands import start, locations
+from commands import admin, start, locations
 import models
 
 async def unknown(message: Message):
@@ -19,6 +19,7 @@ async def main():
 
     dp = Dispatcher()
     dp.include_routers(
+        admin.router,
         start.router,
         locations.router,
         last_router,
