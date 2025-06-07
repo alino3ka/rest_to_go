@@ -17,5 +17,6 @@ async def guess_name(sess: ClientSession, lat: float, lon: float) -> str:
     params = {"lat": lat, "lon": lon, **DEFAULT_PARAMS}
     async with THROTTLER:
         async with sess.get(BASE_URL, params=params) as resp:
+            resp.raise_for_status()
             response = await resp.json()
     return response["name"] or response["display_name"]

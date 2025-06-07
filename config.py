@@ -15,3 +15,4 @@ def _get(name: str) -> str:
     return value
 
 BOT_TOKEN = _get("BOT_TOKEN")
+OPENROUTESERVICE_TOKEN = _get("OPENROUTESERVICE_TOKEN")

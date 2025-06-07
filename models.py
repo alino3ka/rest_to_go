@@ -6,6 +6,9 @@ class Location:
     lat: float
     lon: float
 
+    def pretty(self) -> str:
+        return f"{self.name} ({self.lat}, {self.lon})"
+
 class LocationList:
     def __init__(self):
         self.locs: list[Location] = []

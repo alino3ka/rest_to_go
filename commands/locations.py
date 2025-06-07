@@ -113,5 +113,5 @@ async def destinations(message: Message, destinations: DestinationList):
 def _format_locations(locs: Iterator[Location]) -> str:
     parts: list[str] = []
     for i, loc in enumerate(locs, 1):
-        parts.append(f"{i}: {loc.name} ({loc.lat}, {loc.lon})")
+        parts.append(f"{i}: {loc.pretty()}")
     return "\n".join(parts)

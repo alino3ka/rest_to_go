@@ -8,18 +8,19 @@ from aiogram.types import BotCommand, Message
 from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
-from commands import admin, start, locations
+from commands import admin, start, locations, matrix
 import models
 
 COMMANDS = [
     BotCommand(command="/cancel", description="Cancel current operation"),
-    BotCommand(command="/stats", description="statistics of bot"),
-    BotCommand(command="/add_source", description="add a new source"),
-    BotCommand(command="/add_destination", description="add a new destination"),
+    BotCommand(command="/stats", description="Statistics of bot"),
+    BotCommand(command="/add_source", description="Add a new source"),
+    BotCommand(command="/add_destination", description="Add a new destination"),
     BotCommand(command="/sources", description="List all sources"),
     BotCommand(command="/destinations", description="List all destinations"),
     BotCommand(command="/clear_sources", description="Clear all known sources"),
     BotCommand(command="/clear_destinations", description="Clear all known destinations"),
+    BotCommand(command="/matrix", description="Calculate matrix distance")
 ]
 
 async def unknown(message: Message):
@@ -34,6 +35,7 @@ async def main():
         admin.router,
         start.router,
         locations.router,
+        matrix.router,
         last_router,
     )
 
