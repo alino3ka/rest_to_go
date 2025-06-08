@@ -5,6 +5,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiohttp import ClientSession
 
+from filters.one_percent import OnePercentDropFilter
 from models import DestinationList, SourceList
 from services.matrix import calculate_matrix
 
@@ -30,7 +31,7 @@ async def matrix_handler(
     logging.debug("Calculated time matrix")
 
 
-@router.message(Command("best"))
+@router.message(Command("best"), OnePercentDropFilter())
 async def best_handler(
     message: Message,
     sources: SourceList,
