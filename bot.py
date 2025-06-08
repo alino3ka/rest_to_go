@@ -7,7 +7,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.methods import DeleteMyCommands, SetMyCommands
 from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
-from aiohttp.client import ClientSession
+from aiohttp.client import ClientSession, ClientTimeout
 
 from config import BOT_TOKEN, INITIAL_USER_ID, LOG_LEVEL
 from commands import admin, start, locations, matrix
@@ -73,7 +73,8 @@ async def main():
     }
     sources = models.SourceList()
     destinations = models.DestinationList()
-    async with ClientSession(headers=headers) as session:
+    timeout = ClientTimeout(total=60)
+    async with ClientSession(headers=headers, timeout=timeout, raise_for_status=True) as session:
         await dp.start_polling(
             bot,
             session=session,

@@ -31,6 +31,5 @@ async def calculate_matrix(
         "metrics": ["duration"],
     }
     async with session.post(BASE_URL, headers=HEADERS, json=data) as resp:
-        resp.raise_for_status()
         durations = (await resp.json())["durations"]
     return durations

@@ -24,7 +24,6 @@ async def _guess_name(session: ClientSession, latlon: tuple[float, float]) -> st
     async with THROTTLER:
         logging.debug("send guess name request at (%f, %f)", lat, lon)
         async with session.get(BASE_URL, params=params) as resp:
-            resp.raise_for_status()
             response = await resp.json()
     return response["name"] or response["display_name"]
 
