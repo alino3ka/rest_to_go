@@ -5,7 +5,7 @@ import logging
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.methods import SetMyCommands
+from aiogram.methods import DeleteMyCommands, SetMyCommands
 from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
 from aiohttp.client import ClientSession
 
@@ -16,8 +16,6 @@ from middlewares.whitelist import WhiteListMiddleware
 import models
 
 COMMANDS = [
-    BotCommand(command="/cancel", description="Cancel current operation"),
-    BotCommand(command="/stats", description="Statistics of bot"),
     BotCommand(command="/add_source", description="Add a new source"),
     BotCommand(command="/add_destination", description="Add a new destination"),
     BotCommand(command="/sources", description="List all sources"),
@@ -28,6 +26,9 @@ COMMANDS = [
     BotCommand(command="/best", description="Find best destination from all sources"),
     BotCommand(command="/add_user", description="Add user to whitelist"),
     BotCommand(command="/remove_user", description="Remove user from whitelist"),
+    BotCommand(command="/stats", description="Statistics of bot"),
+    BotCommand(command="/help", description="Show help text"),
+    BotCommand(command="/cancel", description="Cancel current operation"),
 ]
 
 last_router = Router()
@@ -59,8 +60,13 @@ async def cancel_handler(message: Message, state: FSMContext):
         reply_markup=ReplyKeyboardRemove(),
     )
 
+@dp.message(Command("help"))
+async def help_handler(message: Message):
+    await message.answer("This bot helps to find the place that minimize road time from all sources")
+
 async def main():
     bot = Bot(token=BOT_TOKEN)
+    await bot(DeleteMyCommands())
     await bot(SetMyCommands(commands=COMMANDS))
     headers = {
         "User-Agent": "rest_to_go",
