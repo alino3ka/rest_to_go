@@ -9,12 +9,11 @@ from aiogram.methods import SetMyCommands
 from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
 from aiohttp.client import ClientSession
 
-from config import BOT_TOKEN
+from config import BOT_TOKEN, INITIAL_USER_ID
 from commands import admin, start, locations, matrix
-from utils.exceptions import CatchMiddleware
+from middlewares.exceptions import CatchMiddleware
+from middlewares.whitelist import WhiteListMiddleware
 import models
-from utils.whitelist import WhiteListMiddleware
-from config import INITIAL_USER_ID
 
 COMMANDS = [
     BotCommand(command="/cancel", description="Cancel current operation"),
