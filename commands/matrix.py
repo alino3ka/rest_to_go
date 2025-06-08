@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -25,6 +27,7 @@ async def matrix_handler(
         for duration, destination in zip(durations, destinations):
             lines.append(f"> {destination.pretty()}: {duration if duration is not None else "Unknown"}")
     await message.answer("\n".join(lines))
+    logging.debug("Calculated time matrix")
 
 
 @router.message(Command("best"))
@@ -55,5 +58,7 @@ async def best_handler(
 
     if best_i == -1:
         await message.answer("Sorry, I can't find good destination")
+        logging.debug("Failed calculate best destination")
     else:
         await message.answer(f"Best is {destinations[best_i].pretty()}, {best_dist}")
+        logging.debug("Calculated best destination")

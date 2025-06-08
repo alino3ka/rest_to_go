@@ -9,7 +9,7 @@ from aiogram.methods import DeleteMyCommands, SetMyCommands
 from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
 from aiohttp.client import ClientSession
 
-from config import BOT_TOKEN, INITIAL_USER_ID
+from config import BOT_TOKEN, INITIAL_USER_ID, LOG_LEVEL
 from commands import admin, start, locations, matrix
 from middlewares.exceptions import CatchMiddleware
 from middlewares.whitelist import WhiteListMiddleware
@@ -83,5 +83,11 @@ async def main():
         )
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    log_levels = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARN": logging.WARN,
+        "ERROR": logging.ERROR,
+    }
+    logging.basicConfig(level=log_levels[LOG_LEVEL], stream=sys.stdout)
     asyncio.run(main())

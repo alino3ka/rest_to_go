@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 from typing import Iterator
 
 from aiogram import F, Router
@@ -67,12 +68,14 @@ async def add_name_handler(
             f"Saved new source, now I know {len(sources)} sources",
             reply_markup=ReplyKeyboardRemove(),
         )
+        logging.debug("Added new source")
     else:
         destinations.append(loc)
         await message.answer(
             f"Saved new destination, now I know {len(destinations)} destinations",
             reply_markup=ReplyKeyboardRemove(),
         )
+        logging.debug("Added new destination")
 
 @router.message(AddLocation.name)
 async def need_name_handler(message: Message):
@@ -82,11 +85,13 @@ async def need_name_handler(message: Message):
 async def clear_sources_handler(message: Message, sources: SourceList):
     sources.clear()
     await message.answer("Cleared all known sources")
+    logging.debug("Cleared sources")
 
 @router.message(Command("clear_destinations"))
 async def clear_destinations_handler(message: Message, destinations: DestinationList):
     destinations.clear()
     await message.answer("Cleared all known destinations")
+    logging.debug("Cleared destinations")
 
 @router.message(Command("sources"))
 async def sources_handler(message: Message, sources: SourceList):

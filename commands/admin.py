@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -61,9 +63,11 @@ async def user_id_handler(
     await state.clear()
     if data["is_add"]:
         whitelist.add(user_id)
+        logging.warn("Added new user to whitelist")
     else:
         whitelist.remove(user_id)
-    await message.answer("Whitelist modified")
+        logging.warn("Removed user from whitelist")
+    await message.answer("Whitelist (maybe) modified")
 
 
 @router.message(WhiteListManagement.user_id)
