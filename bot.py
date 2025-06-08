@@ -10,10 +10,11 @@ from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
 from aiohttp.client import ClientSession, ClientTimeout
 
 from config import BOT_TOKEN, INITIAL_USER_ID, LOG_LEVEL
-from commands import admin, start, locations, matrix
+from commands import admin, start, lang, locations, matrix
 from middlewares.exceptions import CatchMiddleware
 from middlewares.whitelist import WhiteListMiddleware
 import models
+from utils import localize
 
 COMMANDS = [
     BotCommand(command="/add_source", description="Add a new source"),
@@ -29,6 +30,8 @@ COMMANDS = [
     BotCommand(command="/stats", description="Statistics of bot"),
     BotCommand(command="/help", description="Show help text"),
     BotCommand(command="/cancel", description="Cancel current operation"),
+    BotCommand(command="/language_ru", description="Set russian language"),
+    BotCommand(command="/language_en", description="Set english language"),
 ]
 
 last_router = Router()
@@ -37,19 +40,17 @@ last_router = Router()
 async def unknown_handler(message: Message):
     await message.answer("I don't know what you want")
 
-WHITELIST = models.UserWhiteList.load()
-WHITELIST.add(int(INITIAL_USER_ID))
 
 dp = Dispatcher()
 dp.include_routers(
     admin.router,
     start.router,
+    lang.router,
     locations.router,
     matrix.router,
     last_router,
 )
 dp.message.middleware(CatchMiddleware())
-dp.message.middleware(WhiteListMiddleware(WHITELIST))
 
 
 @dp.message(Command("cancel"))
@@ -65,6 +66,12 @@ async def help_handler(message: Message):
     await message.answer("This bot helps to find the place that minimize road time from all sources")
 
 async def main():
+    whitelist = models.UserWhiteList.load()
+    whitelist.add(int(INITIAL_USER_ID))
+    dp.message.middleware(WhiteListMiddleware(whitelist))
+
+    langs = models.Languages.load(set(localize.locales.keys()))
+
     bot = Bot(token=BOT_TOKEN)
     await bot(DeleteMyCommands())
     await bot(SetMyCommands(commands=COMMANDS))
@@ -80,7 +87,8 @@ async def main():
             session=session,
             sources=sources,
             destinations=destinations,
-            whitelist=WHITELIST,
+            whitelist=whitelist,
+            langs=langs,
         )
 
 if __name__ == "__main__":

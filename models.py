@@ -1,4 +1,7 @@
+from collections import defaultdict
 from dataclasses import dataclass
+
+from aiogram.types import Message
 
 import storage
 
@@ -78,3 +81,42 @@ class UserWhiteList:
 
     def __len__(self) -> int:
         return len(self.whitelist)
+
+
+class Languages:
+    def __init__(self, known_langs: set[str]):
+        self.langs: dict[int, str] = defaultdict(lambda: 'en')
+        self.known_langs = known_langs
+
+    @classmethod
+    def load(cls, known_langs: set[str]):
+        def reader(v):
+            assert isinstance(v, dict)
+            r = defaultdict(lambda: 'en')
+            for k, l in v.items():
+                assert l in known_langs
+                r[int(k)] = l
+            return r
+
+        this = cls(known_langs)
+        try:
+            this.langs = storage.load("admin", "langs", reader)
+        except FileNotFoundError:
+            pass
+        return this
+
+    def store(self):
+        storage.store("admin", "langs", dict(self.langs))
+
+    def __getitem__(self, id_: int | Message) -> str:
+        if isinstance(id_, Message):
+            if id_.from_user is None:
+                return "en"
+            return self.langs[id_.from_user.id]
+        return self.langs[id_]
+
+    def __setitem__(self, id_: int, lang: str):
+        if lang not in self.known_langs:
+            raise ValueError("not known languange")
+        self.langs[id_] = lang
+        self.store()
