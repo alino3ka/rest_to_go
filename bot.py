@@ -3,14 +3,18 @@ import sys
 import logging
 
 from aiogram import Bot, Dispatcher, Router
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from aiogram.methods import SetMyCommands
-from aiogram.types import BotCommand, Message
+from aiogram.types import BotCommand, Message, ReplyKeyboardRemove
 from aiohttp.client import ClientSession
 
 from config import BOT_TOKEN
 from commands import admin, start, locations, matrix
 from utils.exceptions import CatchMiddleware
 import models
+from utils.whitelist import WhiteListMiddleware
+from config import INITIAL_USER_ID
 
 COMMANDS = [
     BotCommand(command="/cancel", description="Cancel current operation"),
@@ -22,7 +26,9 @@ COMMANDS = [
     BotCommand(command="/clear_sources", description="Clear all known sources"),
     BotCommand(command="/clear_destinations", description="Clear all known destinations"),
     BotCommand(command="/matrix", description="Calculate matrix distance"),
-    BotCommand(command="/best", description="Find best destination from all sources")
+    BotCommand(command="/best", description="Find best destination from all sources"),
+    BotCommand(command="/add_user", description="Add user to whitelist"),
+    BotCommand(command="/remove_user", description="Remove user from whitelist"),
 ]
 
 last_router = Router()
@@ -31,6 +37,8 @@ last_router = Router()
 async def unknown_handler(message: Message):
     await message.answer("I don't know what you want")
 
+WHITELIST = models.UserWhiteList.load()
+WHITELIST.add(int(INITIAL_USER_ID))
 
 dp = Dispatcher()
 dp.include_routers(
@@ -41,6 +49,16 @@ dp.include_routers(
     last_router,
 )
 dp.message.middleware(CatchMiddleware())
+dp.message.middleware(WhiteListMiddleware(WHITELIST))
+
+
+@dp.message(Command("cancel"))
+async def cancel_handler(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "Operation canceled",
+        reply_markup=ReplyKeyboardRemove(),
+    )
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
@@ -56,6 +74,7 @@ async def main():
             session=session,
             sources=sources,
             destinations=destinations,
+            whitelist=WHITELIST,
         )
 
 if __name__ == "__main__":

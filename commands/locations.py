@@ -17,14 +17,6 @@ class AddLocation(StatesGroup):
     location = State()
     name = State()
 
-@router.message(Command("cancel"))
-async def cancel_handler(message: Message, state: FSMContext):
-    await state.clear()
-    await message.answer(
-        "Operation canceled",
-        reply_markup=ReplyKeyboardRemove(),
-    )
-
 @router.message(Command("add_source"))
 async def add_source_handler(message: Message, state: FSMContext):
     await state.update_data(is_source=True)

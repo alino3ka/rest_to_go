@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import storage
+
 @dataclass(frozen=True)
 class Location:
     name: str
@@ -38,3 +40,41 @@ class SourceList(LocationList):
 
 class DestinationList(LocationList):
     pass
+
+
+class UserWhiteList:
+    def __init__(self):
+        self.whitelist: set[int] = set()
+
+    @classmethod
+    def load(cls):
+        def reader(v):
+            assert isinstance(v, list)
+            assert all(isinstance(e, int) for e in v)
+            return set(v)
+
+        try:
+            whitelist = storage.load("admin", "whitelist", reader)
+        except FileNotFoundError:
+            whitelist = set()
+
+        this = cls()
+        this.whitelist = whitelist
+        return this
+
+    def store(self):
+        storage.store("admin", "whitelist", list(self.whitelist))
+
+    def add(self, id_: int):
+        self.whitelist.add(id_)
+        self.store()
+
+    def remove(self, id_: int):
+        self.whitelist.discard(id_)
+        self.store()
+
+    def __contains__(self, id_: int) -> bool:
+        return id_ in self.whitelist
+
+    def __len__(self) -> int:
+        return len(self.whitelist)
